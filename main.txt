@@ -3,7 +3,21 @@ while(a==b||i>5)
 do{
 if(a==1)
 {
+ if(a>j)
+{
 a=1;
+}
+else if(s==1)
+{
+b=1;
+}
+else
+{
+c=1;
+do{
+d=c-1*r;
+}while(a>1);
+}
 }
 else
 {
@@ -11,5 +25,3 @@ b=1;
 }
 }while(a>=3&&b<=1);
 }
-
-

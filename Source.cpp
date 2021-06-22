@@ -1,22 +1,21 @@
 #include<iostream>
 #include "Lexer.h"
+#include<iomanip>
 #include <fstream>
 #include <string>
 using namespace std;
 bool factor();
 bool expression();
 bool term();
-bool expr();
 bool statement();
 bool statement_list();
-bool exp();
-bool cmpexp();
-bool shiftexp();
-bool eqexp();
-bool andexp();
-bool Orexp();
+bool Comparison_expr();
+bool Shift_expr();
+bool Equality_expr();
+bool Logical_AND_expr();
+bool Logical_OR_expr();
 static bool flag = 0;
-token tokn;
+token tkn;
 static token curr_Tkn = undefined;
 void ungettoken()
 {
@@ -40,8 +39,8 @@ bool statement_list()
 	{
 		do
 		{
-			tokn = gettoken();
-			if (tokn == If || tokn == Do ||tokn==While || tokn == Variable)
+			tkn = gettoken();
+			if (tkn == If || tkn == Do ||tkn==While || tkn == Variable)
 			{
 				ungettoken();
 				if (!statement())
@@ -63,53 +62,53 @@ bool statement_list()
 bool statement()
 {
 
-	tokn = gettoken();
-	if (tokn == Variable)
+	tkn = gettoken();
+	if (tkn == Variable)
 	{
-		tokn = gettoken();
-		if (tokn == Equal || tokn == Notequal || tokn == Plusequal || tokn == Minusequal||tokn==Plus||tokn == OpenParen)
+		tkn = gettoken();
+		if (tkn == Equal || tkn == Notequal || tkn == Plusequal || tkn == Minusequal||tkn==Plus||tkn == OpenParen)
 		{
-			if (Orexp())
+			if (Logical_OR_expr())
 			{
-				tokn = gettoken();
-				if (tokn == Semicolon)
+				tkn = gettoken();
+				if (tkn == Semicolon)
 					return true;
 			}
 		}
 	}
-	else if (tokn == If)
+	else if (tkn == If)
 	{
 	Label:
-		tokn = gettoken();
-		if (tokn == OpenParen)
+		tkn = gettoken();
+		if (tkn == OpenParen)
 		{
-			if (Orexp())
+			if (Logical_OR_expr())
 			{
-				tokn = gettoken();
-				if (tokn == CloseParen)
+				tkn = gettoken();
+				if (tkn == CloseParen)
 				{
-					tokn = gettoken();
-					if (tokn == OpenBrace)
+					tkn = gettoken();
+					if (tkn == OpenBrace)
 					{
 						if (statement_list())
 						{
-							tokn = gettoken();
-							if (tokn == CloseBrace)
+							tkn = gettoken();
+							if (tkn == CloseBrace)
 							{
-								tokn = gettoken();
-								if (tokn == Else)
+								tkn = gettoken();
+								if (tkn == Else)
 								{
-									tokn = gettoken();
-									if (tokn == OpenBrace)
+									tkn = gettoken();
+									if (tkn == OpenBrace)
 									{
 										if (statement_list())
 										{
-											tokn = gettoken();
-											if (tokn == CloseBrace)
+											tkn = gettoken();
+											if (tkn == CloseBrace)
 												return true;
 										}
 									}
-									else if (tokn == If)
+									else if (tkn == If)
 									{
 										goto Label;
 									}
@@ -123,29 +122,29 @@ bool statement()
 			}
 		}
 	}
-	else if (tokn == Do)
+	else if (tkn == Do)
 	{
-		tokn = gettoken();
-		if (tokn == OpenBrace)
+		tkn = gettoken();
+		if (tkn == OpenBrace)
 		{
 			if (statement_list())
 			{
-				tokn = gettoken();
-				if (tokn == CloseBrace)
+				tkn = gettoken();
+				if (tkn == CloseBrace)
 				{
-					tokn = gettoken();
-					if (tokn == While)
+					tkn = gettoken();
+					if (tkn == While)
 					{
-						tokn = gettoken();
-						if (tokn == OpenParen)
+						tkn = gettoken();
+						if (tkn == OpenParen)
 						{
-							if (Orexp())
+							if (Logical_OR_expr())
 							{
-								tokn = gettoken();
-								if (tokn == CloseParen)
+								tkn = gettoken();
+								if (tkn == CloseParen)
 								{
-									tokn = gettoken();
-									if (tokn == Semicolon)
+									tkn = gettoken();
+									if (tkn == Semicolon)
 									{
 										return true;
 									}
@@ -157,23 +156,23 @@ bool statement()
 			}
 		}
 	}
-	else if (tokn == While)
+	else if (tkn == While)
 	{
-			tokn = gettoken();
-			if (tokn == OpenParen)
+			tkn = gettoken();
+			if (tkn == OpenParen)
 			{
-				if (Orexp())
+				if (Logical_OR_expr())
 				{
-					tokn = gettoken();
-					if (tokn == CloseParen)
+					tkn = gettoken();
+					if (tkn == CloseParen)
 					{
-						tokn = gettoken();
-						if (tokn == OpenBrace)
+						tkn = gettoken();
+						if (tkn == OpenBrace)
 						{
 							if (statement_list())
 							{
-								tokn = gettoken();
-								if (tokn == CloseBrace)
+								tkn = gettoken();
+								if (tkn == CloseBrace)
 								{
 									return true;
 								}
@@ -191,8 +190,8 @@ bool expression()
 	{
 		if (!term())
 			return false;
-		tokn = gettoken();
-	} while (tokn == Plus || tokn == Minus);
+		tkn = gettoken();
+	} while (tkn == Plus || tkn == Minus);
 	ungettoken();
 	return true;
 }
@@ -202,24 +201,24 @@ bool term()
 	{
 		if (!factor())
 			return false;
-		tokn = gettoken();
-	} while (tokn == Mul || tokn == Div || tokn == Modulus);
+		tkn = gettoken();
+	} while (tkn == Mul || tkn == Div || tkn == Modulus);
 	ungettoken();
 	return true;
 }
 bool factor()
 {
-	tokn = gettoken();
-	if (tokn == Variable)
+	tkn = gettoken();
+	if (tkn == Variable)
 		return true;
-	else if (tokn == Number)
+	else if (tkn == Number)
 		return true;
-	else if (tokn == OpenParen)
+	else if (tkn == OpenParen)
 	{
 		if (expression())
 		{
-			tokn = gettoken();
-			if (tokn == CloseParen)
+			tkn = gettoken();
+			if (tkn == CloseParen)
 				return true;
 			else
 				return false;
@@ -229,87 +228,89 @@ bool factor()
 	}
 	return false;
 }
-bool Orexp()
+bool Logical_OR_expr()
 {
 	do
 	{
-		if (!andexp())
+		if (!Logical_AND_expr())
 			return false;
-		tokn = gettoken();
-	} while (tokn == Or);
+		tkn = gettoken();
+	} while (tkn == Or);
 	ungettoken();
 	return true;
 }
-bool andexp()
+bool Logical_AND_expr()
 {
 	do
 	{
-		if (!eqexp())
+		if (!Equality_expr())
 			return false;
-		tokn = gettoken();
-	} while (tokn == And);
+		tkn = gettoken();
+	} while (tkn == And);
 	ungettoken();
 	return true;
 }
-bool eqexp()
+bool Equality_expr()
 {
 	do
 	{
-		if (!cmpexp())
+		if (!Comparison_expr())
 			return false;
-		tokn = gettoken();
-	} while (tokn == EqualEqual || tokn == Notequal);
+		tkn = gettoken();
+	} while (tkn == EqualEqual || tkn == Notequal);
 	ungettoken();
 	return true;
 }
-bool cmpexp()
+bool Comparison_expr()
 {
 	do
 	{
-		if (!shiftexp())
+		if (!Shift_expr())
 			return false;
-		tokn = gettoken();
-	} while (tokn == Lessthan || tokn == Lessthanequal || tokn == Greaterthan || tokn == Greaterthanequal);
+		tkn = gettoken();
+	} while (tkn == Lessthan || tkn == Lessthanequal || tkn == Greaterthan || tkn == Greaterthanequal);
 	ungettoken();
 	return true;
 }
-bool shiftexp()
+bool Shift_expr()
 {
 	do
 	{
 		if (!expression())
 			return false;
-		tokn = gettoken();
-	} while (tokn == Shiftright || tokn == Shiftleft);
+		tkn = gettoken();
+	} while (tkn == Shiftright || tkn == Shiftleft);
 	ungettoken();
 	return true;
 }
 
 int main()
 {
+	cout << "\n\t\tParser Output\n\n";
 	bool res = statement_list();
 	if (res)
-		cout << "true\n";
+		cout << "Input File is Valid according to the specified Language\n\n";
 	else
-		cout << "false\n";
+		cout << "Input Files have syntax erros according to specified Language\n\n";
+	cout << "\n\t---Symbol Table---\n\n";
+	cout << " Name " << "\t\t\t\t   ID-no." << "\t\t  TokenType\n\n";
+	for (auto i = STtkn.begin(); i != STtkn.end(); i++)
+	{
+		cout << left << setw(35) << (*i).tkn_name;
+		cout << "<Id," << (*i).index << setw(20) << ">";
+		cout << mapEnum[(*i).tok] << endl;
+	}
+	cout << "\n\t---All Lexemes token---\n\n";
+	cout << " Name " << "\t\t\t\t   ID-no." << "\t\t  TokenType\n\n";
+	for (auto i = totalFileTkns.begin(); i != totalFileTkns.end(); i++
+		)
+	{
+		cout << left << setw(35) << (*i).tkn_name;
+		cout << "<Id," << (*i).index << setw(20) << ">";
+		cout << mapEnum[(*i).tok] << endl;
+	}
+
 	fin.close();
 	system("pause");
 	return 0;
-}
-bool expr()
-{
-	if (Orexp())
-	{
-		tokn = gettoken();
-		if (tokn == Greaterthan || tokn == Lessthan || tokn== Greaterthanequal || tokn == Lessthanequal || tokn == EqualEqual || tokn ==Notequal)
-		{
-			if (Orexp())
-				return true;
-			else
-				return false;
-		}
-		ungettoken();
-		return true;
-	}
-	return false;
 }

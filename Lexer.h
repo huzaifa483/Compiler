@@ -182,14 +182,14 @@ token getToken()
 			fin.seekg(-1, ios::cur);
 			return token(Number);
 		}
-		if (isalpha(ch))
+		if (isalpha(ch) || ch == '_')
 		{
 			string str = "";
 			do
 			{
 				str = str + ch;
 				fin.get(ch);
-			} while (isalpha(ch) || isdigit(ch));
+			} while (isalpha(ch) || ch == '_' || isdigit(ch));
 			fin.seekg(-1, ios::cur);
 			// Start Checking for Keywords 
 			if (str == "if")
