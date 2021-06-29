@@ -40,7 +40,8 @@ bool statement_list()
 		do
 		{
 			tkn = gettoken();
-			if (tkn == If || tkn == Do ||tkn==While || tkn == Variable)
+			
+			if (tkn == If || tkn == Do ||tkn==While || tkn == Variable||tkn==For)
 			{
 				ungettoken();
 				if (!statement())
@@ -66,7 +67,7 @@ bool statement()
 	if (tkn == Variable)
 	{
 		tkn = gettoken();
-		if (tkn == Equal || tkn == Notequal || tkn == Plusequal || tkn == Minusequal||tkn==Plus||tkn == OpenParen)
+		if (tkn == Equal || tkn == Notequal || tkn == Plusequal || tkn == Minusequal || tkn == Plus || tkn == Lessthan || tkn == Lessthanequal || tkn == Greaterthan || tkn == Greaterthanequal)
 		{
 			if (Logical_OR_expr())
 			{
@@ -181,6 +182,50 @@ bool statement()
 					}
 				}
 			}
+	}
+	else if (tkn == For)
+	{
+		tkn = gettoken();
+		if (tkn == OpenParen)
+		{
+			tkn = gettoken();
+			if (tkn == Int || tkn == Double || tkn == Float || tkn == Char || tkn == Auto||tkn==Variable)
+			{
+				if (tkn == Variable)
+					ungettoken();
+				if (statement())
+				{
+					if (statement())
+					{
+						tkn = gettoken();
+						if (tkn == Variable)
+						{
+							tkn = gettoken();
+							if (tkn == Increment)
+							{
+								tkn = gettoken();
+								if (tkn == CloseParen)
+								{
+									tkn = gettoken();
+									if (tkn == OpenBrace)
+									{
+										if (statement_list())
+										{
+											tkn = gettoken();
+											if (tkn == CloseBrace)
+											{
+												return true;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 	}
 	return false;
 }
