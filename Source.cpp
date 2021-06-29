@@ -347,12 +347,13 @@ int main()
 	}
 	cout << "\n\t---All Lexemes token---\n\n";
 	cout << " Name " << "\t\t\t\t   ID-no." << "\t\t  TokenType\n\n";
-	for (auto i = totalFileTkns.begin(); i != totalFileTkns.end(); i++
-		)
+	for (auto i = totalFileTkns.begin(); i != totalFileTkns.end(); i++)
 	{
+
 		cout << left << setw(35) << (*i).tkn_name;
 		cout << "<Id," << (*i).index << setw(20) << ">";
 		cout << mapEnum[(*i).tok] << endl;
+
 	}
 
 	fin.close();
